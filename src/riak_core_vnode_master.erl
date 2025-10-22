@@ -91,7 +91,7 @@ command2([], _Msg, _Sender, _VMaster, _How) ->
 
 command2([{Index, Pid}|Rest], Msg, Sender, VMaster, How=normal)
   when is_pid(Pid) ->
-    ?LOG_INFO("riak_core_vnode_master:command2/5 triggered with args ~p, ~p, ~p, ~p, ~p, ~p, ~p", [ [{Index, Pid} | Rest], Msg, Sender, VMaster, How]),
+    ?LOG_INFO("riak_core_vnode_master:command2/5 triggered with args ~p, ~p, ~p, ~p, ~p", [ [{Index, Pid} | Rest], Msg, Sender, VMaster, How]),
     gen_fsm:send_event(Pid, make_request(Msg, Sender, Index)),
     command2(Rest, Msg, Sender, VMaster, How);
 
