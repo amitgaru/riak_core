@@ -93,7 +93,7 @@ command2([], _Msg, _Sender, _VMaster, _How) ->
 
 command2([{Index, Pid}|Rest], Msg, Sender, VMaster, How=normal)
   when is_pid(Pid) ->
-    ?LOG_INFO("riak_core_vnode_master:command2/5 triggered with args ~p, ~p, ~p, ~p, ~p", [[{Index, Pid} | Rest], Msg, Sender, VMaster, How]),
+    ?LOG_INFO("riak_core_vnode_master:command2/5 triggered with args ~p, ~p, ~p, ~p, How=normal", [[{Index, Pid} | Rest], Msg, Sender, VMaster]),
     gen_fsm:send_event(Pid, make_request(Msg, Sender, Index)),
     command2(Rest, Msg, Sender, VMaster, How);
 
@@ -103,6 +103,7 @@ command2([{Index, Pid}|Rest], Msg, Sender, VMaster, How=unreliable)
                                                                Index)),
     command2(Rest, Msg, Sender, VMaster, How);
 command2([{Index,Node}|Rest], Msg, Sender, VMaster, How) ->
+    ?LOG_INFO("riak_core_vnode_master:command2/5 triggered with args ~p, ~p, ~p, ~p, ~p", [[{Index,Node}|Rest], Msg, Sender, VMaster, How]),
     proxy_cast({VMaster, Node}, make_request(Msg, Sender, Index), How),
     command2(Rest, Msg, Sender, VMaster, How);
 
@@ -201,6 +202,7 @@ proxy_cast(Who, Req) ->
     proxy_cast(Who, Req, normal).
 
 proxy_cast({VMaster, Node}, Req, How) ->
+    ?LOG_INFO("riak_core_vnode_master:proxy_cast/3 triggered with args ~p, ~p, ~p", [{VMaster, Node}, Req, How]),
     case riak_core_capability:get({riak_core, vnode_routing}, legacy) of
         legacy ->
             if How == normal ->
@@ -213,6 +215,7 @@ proxy_cast({VMaster, Node}, Req, How) ->
     end.
 
 do_proxy_cast({VMaster, Node}, Req=?VNODE_REQ{index=Idx}, How) ->
+    ?LOG_INFO("riak_core_vnode_master:do_proxy_cast/3 triggered with args ~p, ~p, ~p", [{VMaster, Node}, Req, How]),
     Mod = vmaster_to_vmod(VMaster),
     Proxy = riak_core_vnode_proxy:reg_name(Mod, Idx, Node),
     send_an_event(Proxy, Req, How),
@@ -224,6 +227,7 @@ do_proxy_cast({VMaster, Node}, Req=?COVERAGE_REQ{index=Idx}, How) ->
     ok.
 
 send_an_event(Dest, Event, normal) ->
+    ?LOG_INFO("riak_core_vnode_master:send_an_event/3 triggered with args ~p, ~p, ~p", [Dest, Event, normal]),
     gen_fsm:send_event(Dest, Event);
 send_an_event(Dest, Event, unreliable) ->
     riak_core_send_msg:send_event_unreliable(Dest, Event).
