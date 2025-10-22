@@ -74,12 +74,14 @@ get_vnode_pid(Index, VNodeMod) ->
     riak_core_vnode_manager:get_vnode_pid(Index, VNodeMod).
 
 command(Preflist, Msg, VMaster) ->
+    ?LOG_INFO("riak_core_vnode_master:command/3 triggered with args ~p, ~p, ~p", [Preflist, Msg, VMaster]),
     command2(Preflist, Msg, ignore, VMaster, normal).
 
 command_unreliable(Preflist, Msg, VMaster) ->
     command2(Preflist, Msg, ignore, VMaster, unreliable).
 
 command(PrefListOrCmd, Msg, Sender, VMaster) ->
+    ?LOG_INFO("riak_core_vnode_master:command/4 triggered with args ~p, ~p, ~p, ~p", [PrefListOrCmd, Msg, Sender, VMaster]),
     command2(PrefListOrCmd, Msg, Sender, VMaster, normal).
 
 command_unreliable(PrefListOrCmd, Msg, Sender, VMaster) ->
@@ -91,7 +93,7 @@ command2([], _Msg, _Sender, _VMaster, _How) ->
 
 command2([{Index, Pid}|Rest], Msg, Sender, VMaster, How=normal)
   when is_pid(Pid) ->
-    ?LOG_INFO("riak_core_vnode_master:command2/5 triggered with args ~p, ~p, ~p, ~p, ~p", [ [{Index, Pid} | Rest], Msg, Sender, VMaster, How]),
+    ?LOG_INFO("riak_core_vnode_master:command2/5 triggered with args ~p, ~p, ~p, ~p, ~p", [[{Index, Pid} | Rest], Msg, Sender, VMaster, How]),
     gen_fsm:send_event(Pid, make_request(Msg, Sender, Index)),
     command2(Rest, Msg, Sender, VMaster, How);
 
