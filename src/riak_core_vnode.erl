@@ -800,7 +800,7 @@ handle_event(trigger_delete, _StateName, State=#state{modstate={deleted,_}}) ->
 handle_event(trigger_delete, _StateName, State) ->
     active(trigger_delete, State);
 handle_event(R=?VNODE_REQ{}, _StateName, State) ->
-    ?LOG_INFO("riak_core:handle_event/3 triggered with args ~p, ~p, ~p", [R, _StateName, State]),
+    ?LOG_INFO("riak_core_vnode:handle_event/3 triggered with args ~p, ~p, ~p", [R, _StateName, State]),
     active(R, State);
 handle_event(R=?COVERAGE_REQ{}, _StateName, State) ->
     active(R, State).
