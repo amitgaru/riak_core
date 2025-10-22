@@ -370,6 +370,7 @@ vnode_command(_Sender, _Request, State=#state{modstate={deleted,_}}) ->
 vnode_command(Sender, Request, State=#state{mod=Mod,
                                             modstate=ModState,
                                             pool_pid=Pool}) ->
+    ?LOG_INFO("riak_core_vnode:vnode_command/4 triggered with args ~p, ~p, ~p", [Sender, Request, State]),
     case catch Mod:handle_command(Request, Sender, ModState) of
         {'EXIT', ExitReason} ->
             reply(Sender, {vnode_error, ExitReason}),
@@ -799,6 +800,7 @@ handle_event(trigger_delete, _StateName, State=#state{modstate={deleted,_}}) ->
 handle_event(trigger_delete, _StateName, State) ->
     active(trigger_delete, State);
 handle_event(R=?VNODE_REQ{}, _StateName, State) ->
+    ?LOG_INFO("riak_core:handle_event/3 triggered with args ~p, ~p, ~p", [R, _StateName, State]),
     active(R, State);
 handle_event(R=?COVERAGE_REQ{}, _StateName, State) ->
     active(R, State).
