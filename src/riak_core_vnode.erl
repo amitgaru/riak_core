@@ -339,6 +339,7 @@ continue(State, NewModState) ->
 forward_or_vnode_command(Sender, Request, State=#state{forward=Forward,
                                                        mod=Mod,
                                                        index=Index}) ->
+    ?LOG_INFO("riak_core_vnode:forward_or_vnode_command/3 triggered with args ~p, ~p, ~p", [Sender, Request, State]),
     Resizing = is_list(Forward),
     RequestHash = case Resizing of
         true ->
@@ -364,13 +365,12 @@ forward_or_vnode_command(Sender, Request, State=#state{forward=Forward,
             FutureIndex = riak_core_ring:future_index(RequestHash, Index, R),
             vnode_resize_command(Sender, Request, FutureIndex, State)
     end.
-
 vnode_command(_Sender, _Request, State=#state{modstate={deleted,_}}) ->
     continue(State);
 vnode_command(Sender, Request, State=#state{mod=Mod,
                                             modstate=ModState,
                                             pool_pid=Pool}) ->
-    ?LOG_INFO("riak_core_vnode:vnode_command/4 triggered with args ~p, ~p, ~p", [Sender, Request, State]),
+    ?LOG_INFO("riak_core_vnode:vnode_command/3 triggered with args ~p, ~p, ~p", [Sender, Request, State]),
     case catch Mod:handle_command(Request, Sender, ModState) of
         {'EXIT', ExitReason} ->
             reply(Sender, {vnode_error, ExitReason}),
@@ -516,9 +516,11 @@ active(?COVERAGE_REQ{keyspaces=KeySpaces,
     %% Coverage request handled in handoff and non-handoff.  Will be forwarded if set.
     vnode_coverage(Sender, Request, KeySpaces, State);
 active(?VNODE_REQ{sender=Sender, request={resize_forward, Request}}, State) ->
+    ?LOG_INFO("riak_core_vnode:active/2 triggered with args ~p, ~p", [{Sender, Request}, State]),
     vnode_command(Sender, Request, State);
 active(?VNODE_REQ{sender=Sender, request=Request},
        State=#state{handoff_target=HT}) when HT =:= none ->
+    ?LOG_INFO("riak_core_vnode:active/2 triggered with args ~p, ~p with HT=none", [{Sender, Request}, State]),
     forward_or_vnode_command(Sender, Request, State);
 active(?VNODE_REQ{sender=Sender, request=Request},
                   State=#state{handoff_type=resize,
@@ -526,6 +528,7 @@ active(?VNODE_REQ{sender=Sender, request=Request},
                                index=Index,
                                forward=Forward,
                                mod=Mod}) ->
+    ?LOG_INFO("riak_core_vnode:active/2 triggered with args ~p, ~p with HT=none", [{Sender, Request}, State]),
     RequestHash = Mod:request_hash(Request),
     case RequestHash of
         %% will never have enough information to forward request so only handle locally
