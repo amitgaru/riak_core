@@ -64,6 +64,7 @@ start_link(Mod, Index) ->
     proc_lib:start_link(?MODULE, init, [[self(), RegName, Mod, Index]]).
 
 init([Parent, RegName, Mod, Index]) ->
+    logger:info("Starting vnode proxy Parent: ~p, RegName: ~p, Mod: ~p, Index:~p", [Parent, RegName, Mod, Index]),
     erlang:register(RegName, self()),
     proc_lib:init_ack(Parent, {ok, self()}),
 
@@ -132,6 +133,7 @@ call_reply({'EXIT', Reason}) ->
     {error, Reason}.
 
 cast(Name, Msg) ->
+    logger:info("Casting to vnode proxy ~p message ~p", [Name, Msg]),
     catch erlang:send(Name, {'$vnode_proxy_cast', Msg}),
     ok.
 
@@ -148,6 +150,7 @@ system_code_change(State, _, _, _) ->
 loop(Parent, State) ->
     receive
         {'$vnode_proxy_call', From, Msg} ->
+            logger:info("$vnode_proxy_call", []),
             {reply, Reply, NewState} = handle_call(Msg, From, State),
             gen:reply(From, Reply),
             loop(Parent, NewState);
@@ -160,6 +163,7 @@ loop(Parent, State) ->
         {system, From, Msg} ->
             sys:handle_system_msg(Msg, From, Parent, ?MODULE, [], State);
         Msg ->
+            logger:info("riak_core_vnode_proxy:loop/2 Msg: ~p", [Msg]),
             {noreply, NewState} = handle_proxy(Msg, State),
             loop(Parent, NewState)
     end.
