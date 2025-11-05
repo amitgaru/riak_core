@@ -379,6 +379,7 @@ vnode_command(Sender, Request, State=#state{mod=Mod,
         continue ->
             continue(State, ModState);
         {reply, Reply, NewModState} ->
+            logger:info("riak_core_vnode:vnode_command/3 replying ~p to ~p", [Reply, Sender]),
             reply(Sender, Reply),
             continue(State, NewModState);
         {noreply, NewModState} ->
