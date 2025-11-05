@@ -215,7 +215,9 @@ handle_cast(_Msg, State) ->
 
 %% @private
 handle_proxy(Msg, State=#state{check_threshold=undefined}) ->
+    logger:info("riak_core_vnode_proxy:handle_proxy/2 check_threshold=undefined Msg: ~p", [Msg]),
     {Pid, NewState} = get_vnode_pid(State),
+    timer:sleep(2000),
     Pid ! Msg,
     {noreply, NewState};
 handle_proxy(Msg, State=#state{check_counter=Counter,
