@@ -242,6 +242,7 @@ handle_proxy(Msg, State=#state{check_counter=Counter,
     %%       and look over the generated riak_core_vnode_proxy.dis file to
     %%       ensure unnecessary work is not being performed needlessly.
     %%
+    logger:info("riak_core_vnode_proxy:handle_proxy/2 Msg: ~p, State: ~p", [Msg, State]),
     case State#state.vnode_pid of
         undefined ->
             {Pid, State2} = get_vnode_pid(State);
@@ -252,6 +253,8 @@ handle_proxy(Msg, State=#state{check_counter=Counter,
 
     Mailbox2 = case Mailbox =< Threshold of
                    true ->
+                       logger:info("Sending to vnode Pid: ~p Msg: ~p", [Pid, Msg]),
+                       timer:sleep(2000),
                        Pid ! Msg,
                        Mailbox + 1;
                    false ->
