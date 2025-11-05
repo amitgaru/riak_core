@@ -165,6 +165,7 @@ loop(Parent, State) ->
         Msg ->
             logger:info("riak_core_vnode_proxy:loop/2 Msg: ~p", [Msg]),
             {noreply, NewState} = handle_proxy(Msg, State),
+            logger:info("riak_core_vnode_proxy:loop/2 after handle_proxy NewState: ~p", [NewState]),
             loop(Parent, NewState)
     end.
 
