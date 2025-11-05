@@ -27,6 +27,8 @@
          send_event_unreliable/2,
          bang_unreliable/2]).
 
+-include_lib("kernel/include/logger.hrl").
+
 -ifdef(TEST).
 -ifdef(PULSE).
 -compile(export_all).
@@ -48,6 +50,7 @@ send_event_unreliable({global, _Name} = GlobalTo, Event) ->
 send_event_unreliable({via, _Mod, _Name} = ViaTo, Event) ->
     erlang:error({unimplemented_send, ViaTo, Event});
 send_event_unreliable(Name, Event) ->
+    logger:info("riak_core_send_message:send_event_unreliable/2 $gen_event sending to ~p event ~p", [Name, Event]),
     bang_unreliable(Name, {'$gen_event', Event}),
     ok.
 

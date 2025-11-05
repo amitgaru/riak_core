@@ -529,7 +529,7 @@ active(?VNODE_REQ{sender=Sender, request=Request},
                                index=Index,
                                forward=Forward,
                                mod=Mod}) ->
-    ?LOG_INFO("riak_core_vnode:active/2 triggered with args ~p, ~p with HT=none", [{Sender, Request}, State]),
+    ?LOG_INFO("riak_core_vnode:active/2 triggered with args ~p, ~p with HT!=none", [{Sender, Request}, State]),
     RequestHash = Mod:request_hash(Request),
     case RequestHash of
         %% will never have enough information to forward request so only handle locally
