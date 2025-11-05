@@ -521,7 +521,7 @@ active(?VNODE_REQ{sender=Sender, request={resize_forward, Request}}, State) ->
     vnode_command(Sender, Request, State);
 active(?VNODE_REQ{sender=Sender, request=Request},
        State=#state{handoff_target=HT}) when HT =:= none ->
-    ?LOG_INFO("riak_core_vnode:active/2 triggered with args ~p, ~p with HT=none", [{Sender, Request}, State]),
+    ?LOG_INFO("riak_core_vnode:active/2 Time: ~p triggered with args ~p, ~p with HT=none", [erlang:system_time(millisecond), {Sender, Request}, State]),
     forward_or_vnode_command(Sender, Request, State);
 active(?VNODE_REQ{sender=Sender, request=Request},
                   State=#state{handoff_type=resize,

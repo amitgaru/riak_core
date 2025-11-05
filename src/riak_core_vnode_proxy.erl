@@ -163,9 +163,9 @@ loop(Parent, State) ->
         {system, From, Msg} ->
             sys:handle_system_msg(Msg, From, Parent, ?MODULE, [], State);
         Msg ->
-            logger:info("riak_core_vnode_proxy:loop/2 Msg: ~p", [Msg]),
+            logger:info("riak_core_vnode_proxy:loop/2 Time: ~p, Msg: ~p", [erlang:system_time(millisecond), Msg]),
             {noreply, NewState} = handle_proxy(Msg, State),
-            logger:info("riak_core_vnode_proxy:loop/2 after handle_proxy NewState: ~p", [NewState]),
+            logger:info("riak_core_vnode_proxy:loop/2 Time: ~p after handle_proxy NewState: ~p", [erlang:system_time(millisecond), NewState]),
             loop(Parent, NewState)
     end.
 
