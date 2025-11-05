@@ -264,6 +264,7 @@ handle_call({return_vnode, Req=?VNODE_REQ{index=Idx}}, _From,
     {reply, {ok, Pid}, State};
 handle_call(Req=?VNODE_REQ{index=Idx, sender={server, undefined, undefined}},
             From, State=#state{vnode_mod=Mod}) ->
+    logger:info("riak_core_vnode_master:handle_call/3 triggered with args ~p, ~p, ~p", [Req, From, State]),
     Proxy = riak_core_vnode_proxy:reg_name(Mod, Idx),
     gen_fsm:send_event(Proxy, Req?VNODE_REQ{sender={server, undefined, From}}),
     {noreply, State};
