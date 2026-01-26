@@ -81,6 +81,8 @@ get_vnode_pid(Index, VNodeMod) ->
     riak_core_vnode_manager:get_vnode_pid(Index, VNodeMod).
 
 command(Preflist, Msg, VMaster) ->
+    ?LOG_INFO("riak_core_vnode_master:command/3 called with args: ~p, ~p, ~p",
+              [Preflist, Msg, VMaster]),
     command2(Preflist, Msg, ignore, VMaster, normal).
 
 command_unreliable(Preflist, Msg, VMaster) ->
@@ -237,8 +239,6 @@ handle_cast({wait_for_service, Service}, State) ->
     end,
     {noreply, State};
 handle_cast(Req=?VNODE_REQ{index=Idx}, State=#state{vnode_mod=Mod}) ->
-    ?LOG_INFO("riak_core_vnode_master:handle_cast/2 called with args: ~p, ~p",
-              [Req, State]),
     Proxy = riak_core_vnode_proxy:reg_name(Mod, Idx),
     gen_fsm:send_event(Proxy, Req),
     {noreply, State};
