@@ -98,8 +98,6 @@ command2([], _Msg, _Sender, _VMaster, _How) ->
 
 command2([{Index, Pid}|Rest], Msg, Sender, VMaster, How=normal)
   when is_pid(Pid) ->
-    ?LOG_INFO("Called riak_core_vnode_master:command2/3 with args ~p, ~p, ~p, ~p, ~p",
-              [Rest, Msg, Sender, VMaster, How]),
     gen_fsm:send_event(Pid, make_request(Msg, Sender, Index)),
     command2(Rest, Msg, Sender, VMaster, How);
 
@@ -239,6 +237,8 @@ handle_cast({wait_for_service, Service}, State) ->
     end,
     {noreply, State};
 handle_cast(Req=?VNODE_REQ{index=Idx}, State=#state{vnode_mod=Mod}) ->
+    ?LOG_INFO("riak_core_vnode_master:handle_cast/2 called with args: ~p, ~p",
+              [Req, State]),
     Proxy = riak_core_vnode_proxy:reg_name(Mod, Idx),
     gen_fsm:send_event(Proxy, Req),
     {noreply, State};
