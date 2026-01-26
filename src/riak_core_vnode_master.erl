@@ -81,14 +81,14 @@ get_vnode_pid(Index, VNodeMod) ->
     riak_core_vnode_manager:get_vnode_pid(Index, VNodeMod).
 
 command(Preflist, Msg, VMaster) ->
-    ?LOG_INFO("riak_core_vnode_master:command/3 called with args: ~p, ~p, ~p",
-              [Preflist, Msg, VMaster]),
     command2(Preflist, Msg, ignore, VMaster, normal).
 
 command_unreliable(Preflist, Msg, VMaster) ->
     command2(Preflist, Msg, ignore, VMaster, unreliable).
 
 command(PrefListOrCmd, Msg, Sender, VMaster) ->
+    ?LOG_INFO("riak_core_vnode_master:command/4 called with args: ~p, ~p, ~p, ~p",
+              [PrefListOrCmd, Msg, Sender, VMaster]),
     command2(PrefListOrCmd, Msg, Sender, VMaster, normal).
 
 command_unreliable(PrefListOrCmd, Msg, Sender, VMaster) ->
