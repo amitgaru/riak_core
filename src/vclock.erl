@@ -54,6 +54,8 @@
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
+-include_lib("kernel/include/logger.hrl").
+
 -export_type([vclock/0, timestamp/0, vclock_node/0, dot/0, pure_dot/0]).
 
 -type vclock() :: [dot()].
@@ -157,6 +159,7 @@ merge([], Left, AccClock) -> lists:reverse(AccClock, Left);
 merge(Left, [], AccClock) -> lists:reverse(AccClock, Left);
 merge(V=[{Node1,{Ctr1,TS1}=CT1}=NCT1|VClock],
       N=[{Node2,{Ctr2,TS2}=CT2}=NCT2|NClock], AccClock) ->
+    ?LOG_INFO("riak_core/vclock called with args V=~p, N=~p, AccClock=~p", [V, N, AccClock]),
     if Node1 < Node2 ->
             merge(VClock, N, [NCT1|AccClock]);
        Node1 > Node2 ->
